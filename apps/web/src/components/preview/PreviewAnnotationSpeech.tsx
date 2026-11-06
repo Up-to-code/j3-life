@@ -187,6 +187,7 @@ export function PreviewAnnotationSpeech({
       downloading={speech.setup.downloading}
       error={speech.setup.error}
       onOpenChange={speech.setup.setOpen}
+      onRetryCatalog={speech.setup.retryCatalog}
       onDownload={() => void speech.setup.download()}
       onCancelDownload={() => void speech.setup.cancelDownload()}
       onStartRecording={() => void speech.setup.startRecording()}
