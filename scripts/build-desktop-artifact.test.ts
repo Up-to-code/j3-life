@@ -528,6 +528,7 @@ it.layer(NodeServices.layer)("build-desktop-artifact", (it) => {
         undefined,
       );
 
+      assert.nestedPropertyVal(release, "mac.identity", "-");
       assert.isNull(preview.publish);
       assert.isNull(previewChannel.publish);
       assert.deepStrictEqual(release.publish, [
