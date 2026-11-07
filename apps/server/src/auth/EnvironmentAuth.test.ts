@@ -315,7 +315,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodePlatformCrypto.layer))(
         const sessions = yield* SessionStore.SessionStore;
         const bearer = yield* serverAuth.issueSession();
         const verified = yield* serverAuth.authenticateHttpRequest({
-          cookies: { [sessions.legacyCookieName ?? "t3_session"]: "stale" },
+          cookies: { [sessions.legacyCookieName ?? "j3life_session"]: "stale" },
           headers: { authorization: `Bearer ${bearer.token}` },
         } as never);
 
@@ -642,7 +642,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodePlatformCrypto.layer))(
           origin: "https://box.tail1234.ts.net",
           "x-forwarded-host": "box.tail1234.ts.net",
         });
-        yield* upgrade({ origin: "t3code://app" });
+        yield* upgrade({ origin: "j3life://app" });
         yield* upgrade({ origin: "http://localhost:5733" });
         yield* upgrade({});
 

@@ -14,6 +14,7 @@ packages/*/dist
 build/
 .logs/
 release/
+release-cli/
 release-mock/
 .t3
 .idea/
@@ -48,3 +49,7 @@ node_modules/
 
 # pnpm content-addressable store; never belongs in the repo.
 .pnpm-store/
+
+# Personal runtime data and portable backups
+.j3-life/
+*.j3life-backup.json

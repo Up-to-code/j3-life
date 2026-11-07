@@ -1858,7 +1858,7 @@ it.layer(
       const { manager, ptyAdapter } = yield* createManager(5, {
         env: {
           PORT: "5173",
-          T3CODE_PORT: "3773",
+          J3LIFE_PORT: "3773",
           VITE_DEV_SERVER_URL: "http://localhost:5173",
           TEST_TERMINAL_KEEP: "keep-me",
           TMUX: "/tmp/tmux-1000/default,1234,0",
@@ -1874,7 +1874,7 @@ it.layer(
       if (!spawnInput) return;
 
       expect(spawnInput.env.PORT).toBeUndefined();
-      expect(spawnInput.env.T3CODE_PORT).toBeUndefined();
+      expect(spawnInput.env.J3LIFE_PORT).toBeUndefined();
       expect(spawnInput.env.VITE_DEV_SERVER_URL).toBeUndefined();
       expect(spawnInput.env.TEST_TERMINAL_KEEP).toBe("keep-me");
       expect(spawnInput.env.TMUX).toBeUndefined();

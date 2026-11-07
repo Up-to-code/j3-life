@@ -60,7 +60,7 @@ export function isProxiableBindHost(host: string): boolean {
 }
 
 export const DEFAULT_T3_HOME = Effect.map(Effect.service(Path.Path), (path) =>
-  path.join(NodeOS.homedir(), ".t3"),
+  path.join(NodeOS.homedir(), ".j3-life"),
 );
 
 const MODE_ARGS = {
@@ -115,7 +115,7 @@ export class DevRunnerConfigurationError extends Schema.TaggedError<DevRunnerCon
 export class DevRunnerInvalidPortOffsetError extends Schema.TaggedError<DevRunnerInvalidPortOffsetError>()(
   "DevRunnerInvalidPortOffsetError",
   {
-    configKey: Schema.Literal("T3CODE_PORT_OFFSET"),
+    configKey: Schema.Literal("J3LIFE_PORT_OFFSET"),
     portOffset: Schema.Number,
     minimum: Schema.Number,
   },
@@ -216,7 +216,7 @@ const optionalIntegerConfig = (name: string): Config.Config<number | undefined> 
     Config.map((value) => Option.getOrUndefined(value)),
   );
 const OffsetConfig = Config.all({
-  portOffset: optionalIntegerConfig("T3CODE_PORT_OFFSET"),
+  portOffset: optionalIntegerConfig("J3LIFE_PORT_OFFSET"),
   devInstance: optionalStringConfig("T3CODE_DEV_INSTANCE"),
 });
 
@@ -232,7 +232,7 @@ export function resolveOffset(config: {
     if (config.portOffset < 0) {
       return Effect.fail(
         new DevRunnerInvalidPortOffsetError({
-          configKey: "T3CODE_PORT_OFFSET",
+          configKey: "J3LIFE_PORT_OFFSET",
           portOffset: config.portOffset,
           minimum: 0,
         }),
@@ -240,7 +240,7 @@ export function resolveOffset(config: {
     }
     return Effect.succeed({
       offset: config.portOffset,
-      source: `T3CODE_PORT_OFFSET=${config.portOffset}`,
+      source: `J3LIFE_PORT_OFFSET=${config.portOffset}`,
     });
   }
 
@@ -327,9 +327,9 @@ export const createDevRunnerEnv = Effect.fn("dev-runner.createDevRunnerEnv")(fun
   };
 
   if (configuredBaseDir !== undefined) {
-    output.T3CODE_HOME = resolvedBaseDir;
+    output.J3LIFE_HOME = resolvedBaseDir;
   } else {
-    delete output.T3CODE_HOME;
+    delete output.J3LIFE_HOME;
   }
 
   // Managed T3 service shells leak launcher variables that make dev servers fail version checks.
@@ -342,7 +342,7 @@ export const createDevRunnerEnv = Effect.fn("dev-runner.createDevRunnerEnv")(fun
   output.T3CODE_TELEMETRY_ENABLED = baseEnv.T3CODE_TELEMETRY_ENABLED ?? "false";
 
   if (!isDesktopMode) {
-    output.T3CODE_PORT = String(serverPort);
+    output.J3LIFE_PORT = String(serverPort);
     // An inherited HOST pins Vite's HMR socket via explicitHost in apps/web/vite.config.ts.
     // Only desktop mode should set it.
     delete output.HOST;
@@ -363,7 +363,7 @@ export const createDevRunnerEnv = Effect.fn("dev-runner.createDevRunnerEnv")(fun
       delete output.T3CODE_SINGLE_ORIGIN_DEV;
     }
   } else {
-    output.T3CODE_PORT = String(serverPort);
+    output.J3LIFE_PORT = String(serverPort);
     output.VITE_HTTP_URL = `http://${DESKTOP_DEV_LOOPBACK_HOST}:${serverPort}`;
     output.VITE_WS_URL = `ws://${DESKTOP_DEV_LOOPBACK_HOST}:${serverPort}`;
     // Desktop pins the renderer to loopback on purpose; an ambient marker
@@ -633,7 +633,12 @@ const prepareFirstStart = Effect.fn("dev-runner.prepareFirstStart")(function* (i
         );
       }
     }
-    const source = path.join(yield* HostProcess.HomeDirectory, ".t3", "userdata", "statev2.sqlite");
+    const source = path.join(
+      yield* HostProcess.HomeDirectory,
+      ".j3-life",
+      "userdata",
+      "statev2.sqlite",
+    );
     // A V1 state.sqlite counts as data too: the server imports it only while
     // statev2.sqlite is missing, so seeding would hide it.
     if (
@@ -693,7 +698,7 @@ export const runDevRunnerWithInput = Effect.fn("dev-runner.runDevRunnerWithInput
     Effect.mapError(
       (cause) =>
         new DevRunnerConfigurationError({
-          configKeys: ["T3CODE_PORT_OFFSET", "T3CODE_DEV_INSTANCE"],
+          configKeys: ["J3LIFE_PORT_OFFSET", "T3CODE_DEV_INSTANCE"],
           cause,
         }),
     ),
@@ -730,7 +735,7 @@ export const runDevRunnerWithInput = Effect.fn("dev-runner.runDevRunnerWithInput
   const hostEnvironment = yield* HostProcess.Environment;
   // A dev server started inside a worktree defaults to that worktree's own
   // (gitignored) `.t3` — see @t3tools/shared/devHome for why this must
-  // outrank an ambient T3CODE_HOME. `--home-dir` still wins.
+  // outrank an ambient J3LIFE_HOME. `--home-dir` still wins.
   const worktreeHome = yield* resolveWorktreeT3Home(yield* HostProcess.WorkingDirectory);
   // Trim before choosing: `--home-dir ""` is not a selection, and treating it
   // as one would skip the worktree default and land on the shared home —
@@ -738,7 +743,7 @@ export const runDevRunnerWithInput = Effect.fn("dev-runner.runDevRunnerWithInput
   const resolvedT3Home =
     (input.t3Home?.trim() || undefined) ??
     worktreeHome ??
-    (hostEnvironment.T3CODE_HOME?.trim() || undefined);
+    (hostEnvironment.J3LIFE_HOME?.trim() || undefined);
   const env = yield* createDevRunnerEnv({
     mode: input.mode,
     baseEnv: hostEnvironment,
@@ -757,10 +762,10 @@ export const runDevRunnerWithInput = Effect.fn("dev-runner.runDevRunnerWithInput
     serverOffset !== offset || webOffset !== offset
       ? ` selectedOffset(server=${serverOffset},web=${webOffset})`
       : "";
-  const baseDir = env.T3CODE_HOME ?? (yield* DEFAULT_T3_HOME);
+  const baseDir = env.J3LIFE_HOME ?? (yield* DEFAULT_T3_HOME);
 
   yield* Effect.logInfo(
-    `[dev-runner] mode=${input.mode} source=${source}${selectionSuffix} serverPort=${String(env.T3CODE_PORT)} webPort=${String(env.PORT)} baseDir=${baseDir}`,
+    `[dev-runner] mode=${input.mode} source=${source}${selectionSuffix} serverPort=${String(env.J3LIFE_PORT)} webPort=${String(env.PORT)} baseDir=${baseDir}`,
   );
 
   // Before the share block: --dry-run only resolves and prints. Sharing would
@@ -792,7 +797,7 @@ export const runDevRunnerWithInput = Effect.fn("dev-runner.runDevRunnerWithInput
           ...(input.built
             ? {
                 localTarget: {
-                  port: Number(env.T3CODE_PORT),
+                  port: Number(env.J3LIFE_PORT),
                   host: ["::1", "[::1]"].includes(input.host?.trim() ?? "") ? "[::1]" : "127.0.0.1",
                 },
               }
@@ -917,7 +922,7 @@ const devRunnerCli = Command.make("dev-runner", {
   ),
   t3Home: Flag.String("home-dir").pipe(
     Flag.withDescription(
-      "Explicit T3 Code data directory; runtime state is stored under userdata (equivalent to T3CODE_HOME). Inside a git worktree this defaults to that worktree's own .t3 so dev state stays off the shared home.",
+      "Explicit T3 Code data directory; runtime state is stored under userdata (equivalent to J3LIFE_HOME). Inside a git worktree this defaults to that worktree's own .t3 so dev state stays off the shared home.",
     ),
     Flag.optional,
     Flag.map(Option.getOrUndefined),
@@ -943,8 +948,8 @@ const devRunnerCli = Command.make("dev-runner", {
   ),
   port: Flag.Int("port").pipe(
     Flag.withSchema(Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: 65535 }))),
-    Flag.withDescription("Server port override (forwards to T3CODE_PORT)."),
-    Flag.withFallbackConfig(optionalPortConfig("T3CODE_PORT")),
+    Flag.withDescription("Server port override (forwards to J3LIFE_PORT)."),
+    Flag.withFallbackConfig(optionalPortConfig("J3LIFE_PORT")),
   ),
   devUrl: Flag.String("dev-url").pipe(
     Flag.withSchema(Schema.URLFromString),

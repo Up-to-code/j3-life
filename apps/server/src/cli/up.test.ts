@@ -182,7 +182,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodeCrypto.layer, NetService.layer))
     },
     {
       label: "the local network opens",
-      prints: "Run `t3 pair --base-dir <baseDir>`.",
+      prints: "Run `j3-life pair --base-dir <baseDir>`.",
       installed: true,
       env: "T3CODE_LAN=false\n",
       args: ["--lan"],
@@ -221,7 +221,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodeCrypto.layer, NetService.layer))
     {
       label: "a failed update keeps service.env matching the old service",
       // The old service still runs, so no foreground server is offered.
-      prints: "Fix that, then run `t3 up --base-dir <baseDir>` again.",
+      prints: "Fix that, then run `j3-life up --base-dir <baseDir>` again.",
       installed: true,
       status: { current: false },
       installFails: true,
@@ -351,9 +351,9 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodeCrypto.layer, NetService.layer))
 });
 
 it("rewrites only the named service.env keys and keeps the user's lines", () => {
-  const before = ["# my settings", "T3CODE_PORT=4000", "export T3CODE_LAN=0", "T3CODE_LAN=1", ""];
+  const before = ["# my settings", "J3LIFE_PORT=4000", "export T3CODE_LAN=0", "T3CODE_LAN=1", ""];
   expect(upsertServiceEnv(before.join("\n"), { T3CODE_LAN: "true", T3CODE_HOST: undefined })).toBe(
-    ["# my settings", "T3CODE_PORT=4000", "T3CODE_LAN=true", ""].join("\n"),
+    ["# my settings", "J3LIFE_PORT=4000", "T3CODE_LAN=true", ""].join("\n"),
   );
   expect(upsertServiceEnv("", { T3CODE_LAN: "false" })).toBe("T3CODE_LAN=false\n");
 });

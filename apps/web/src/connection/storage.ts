@@ -42,7 +42,7 @@ import * as Semaphore from "effect/Semaphore";
 import * as Stream from "effect/Stream";
 import { projectFaviconCache } from "../assets/projectFaviconCache";
 
-const DATABASE_NAME = "t3code:connection-runtime";
+const DATABASE_NAME = "j3life:connection-runtime";
 const DATABASE_VERSION = 5;
 const CATALOG_STORE_NAME = "catalog";
 const SHELL_STORE_NAME = "shell";
@@ -592,8 +592,8 @@ export const makeCatalogStore = Effect.fn("web.connectionStorage.makeCatalogStor
 
 // The stored names predate the rename and stay, so a tab still on an older version and an
 // updated one read and revoke the same grants.
-const PULL_REQUEST_ROUTING_KEY_PREFIX = "t3code:github-routing:";
-const PULL_REQUEST_ROUTING_CHANGED = "t3code:github-routing-changed";
+const PULL_REQUEST_ROUTING_KEY_PREFIX = "j3life:github-routing:";
+const PULL_REQUEST_ROUTING_CHANGED = "j3life:github-routing-changed";
 const isStoredPullRequestRoutingPermission = Schema.is(StoredPullRequestRoutingPermission);
 const encodeStoredPullRequestRoutingPermission = Schema.encodeSync(
   Schema.fromJsonString(StoredPullRequestRoutingPermission),

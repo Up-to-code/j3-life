@@ -26,7 +26,7 @@ declare const __T3CODE_TELEMETRY_CHANNEL__: ReleaseChannel | undefined;
 export const telemetryChannel: ReleaseChannel =
   typeof __T3CODE_TELEMETRY_CHANNEL__ === "undefined" ? "dev" : __T3CODE_TELEMETRY_CHANNEL__;
 
-export const DEFAULT_PORT = 3773;
+export const DEFAULT_PORT = 3774;
 
 export const RuntimeMode = Schema.Literals(["web", "desktop"]);
 export type RuntimeMode = typeof RuntimeMode.Type;
@@ -123,7 +123,7 @@ export const otlpResource = (
   serviceName: "t3code-server",
   serviceVersion: packageJson.version,
   attributes: {
-    "service.namespace": "t3code",
+    "service.namespace": "j3life",
     "service.runtime": "t3-server",
     "t3code.server.managed_by": config.mode === "desktop" ? "desktop" : "standalone",
     "service.instance.id": processServiceInstanceId(config.otelEnvironment.resourceAttributes),

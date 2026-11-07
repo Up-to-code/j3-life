@@ -1668,7 +1668,7 @@ export default function ChatView(props: ChatViewProps) {
   });
   const [resumeCompactionPermanentlyDismissed, setResumeCompactionPermanentlyDismissed] =
     useLocalStorage(
-      `t3code:resume-compaction-dismissed:${environmentId}:${activeProviderInstanceId ?? "claudeAgent"}`,
+      `j3life:resume-compaction-dismissed:${environmentId}:${activeProviderInstanceId ?? "claudeAgent"}`,
       false,
       Schema.Boolean,
     );
@@ -1691,7 +1691,7 @@ export default function ChatView(props: ChatViewProps) {
     setResumeCompactionPermanentlyDismissed,
   ]);
   const [dismissedFallbackWindow, setDismissedFallbackWindow] = useLocalStorage(
-    `t3code:fallback-notice-dismissed:${environmentId}`,
+    `j3life:fallback-notice-dismissed:${environmentId}`,
     null,
     DismissedFallbackWindowSchema,
   );
@@ -3988,7 +3988,7 @@ export default function ChatView(props: ChatViewProps) {
         <ChatRightPanel
           sheet={shouldUsePlanSidebarSheet}
           workspaceLayoutElement={workspaceLayoutElement}
-          widthStorageKey={`t3code:preview-panel-width:${activeThreadKey}`}
+          widthStorageKey={`j3life:preview-panel-width:${activeThreadKey}`}
           sheetAnimationDurationMs={panelAnimationsActive ? panelAnimationDurationMs : 0}
           onCloseSheet={closePreviewPanelStable}
           open={rightPanelOpen}

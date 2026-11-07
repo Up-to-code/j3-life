@@ -974,7 +974,7 @@ describe("asking about a change rather than working on it", () => {
     const otherUrl = "https://github.com/acme/other/pull/42";
     const first = buildAddSelectionToAgentHandoff({
       ...base,
-      comment: selection("pull-request-selection:t3code:page.tsx:12:18"),
+      comment: selection("pull-request-selection:j3life:page.tsx:12:18"),
       request: "why?",
     });
     const second = buildAddSelectionToAgentHandoff({

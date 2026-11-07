@@ -7,7 +7,7 @@ import * as NodeUtil from "node:util";
 
 const execFile = NodeUtil.promisify(NodeChildProcess.execFile);
 
-const SHOWCASE_PROJECT_ID = "t3code";
+const SHOWCASE_PROJECT_ID = "j3life";
 const SHOWCASE_THREAD_ID = "remote-command-center";
 
 export const SHOWCASE_SCENES = [
@@ -104,9 +104,9 @@ const PROJECT_FAVICONS = {
 
 export const SHOWCASE_PROJECTS = [
   {
-    id: "t3code",
+    id: "j3life",
     title: "T3 Code",
-    directory: "t3code",
+    directory: "j3life",
     repositoryUrl: "https://github.com/pingdotgg/t3code.git",
     favicon: PROJECT_FAVICONS.t3code,
   },
@@ -130,7 +130,7 @@ export const SHOWCASE_ENVIRONMENTS = [
   {
     id: "moonbase-terminal",
     label: "Moonbase Terminal",
-    projectIds: ["t3code"],
+    projectIds: ["j3life"],
   },
   {
     id: "suspense-station",
@@ -147,7 +147,7 @@ export const SHOWCASE_ENVIRONMENTS = [
 export const SHOWCASE_THREADS = [
   {
     id: SHOWCASE_THREAD_ID,
-    projectId: "t3code",
+    projectId: "j3life",
     title: "Make remote coding feel local ✦",
     branch: "feat/remote-command-center",
     minutesAgo: 3,
@@ -158,7 +158,7 @@ export const SHOWCASE_THREADS = [
   },
   {
     id: "pocket-command-center",
-    projectId: "t3code",
+    projectId: "j3life",
     title: "Put the command center in your pocket",
     branch: "feat/pocket-command-center",
     minutesAgo: 21,
@@ -215,7 +215,7 @@ export const SHOWCASE_THREADS = [
   },
   {
     id: "handoff-haptics",
-    projectId: "t3code",
+    projectId: "j3life",
     title: "Tune the handoff haptics",
     branch: "feat/handoff-haptics",
     minutesAgo: 5 * 60,
@@ -282,7 +282,7 @@ async function seedT3CodeWorkspace(workspaceRoot: string): Promise<void> {
   });
   await NodeFSP.writeFile(
     NodePath.join(workspaceRoot, "package.json"),
-    `${JSON.stringify({ name: "t3code", private: true, scripts: { test: "vp test" } }, null, 2)}\n`,
+    `${JSON.stringify({ name: "j3life", private: true, scripts: { test: "vp test" } }, null, 2)}\n`,
   );
   await NodeFSP.writeFile(NodePath.join(workspaceRoot, "favicon.svg"), PROJECT_FAVICONS.t3code);
   await NodeFSP.writeFile(

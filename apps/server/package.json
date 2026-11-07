@@ -1,14 +1,14 @@
 {
   "name": "t3",
-  "version": "0.1.7",
+  "version": "0.1.7-j3.1",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pingdotgg/t3code",
+    "url": "https://github.com/Up-to-code/j3-life",
     "directory": "apps/server"
   },
   "bin": {
-    "t3": "./dist/bin.mjs"
+    "j3-life": "./dist/bin.mjs"
   },
   "files": [
     "dist"
@@ -73,6 +73,7 @@
     "stream-json": "3.6.0",
     "transcribe-cpp": "0.4.1",
     "undici": "catalog:",
+    "web-push": "^3.6.7",
     "yaml": "catalog:",
     "yauzl": "^3.4.0",
     "zod": "^4.6.5"
@@ -94,6 +95,7 @@
     "@t3tools/web": "workspace:*",
     "@types/node": "catalog:",
     "@types/proper-lockfile": "^4.1.4",
+    "@types/web-push": "^3.6.4",
     "@types/yauzl": "^3.4.0",
     "effect-acp": "workspace:*",
     "effect-codex-app-server": "workspace:*",

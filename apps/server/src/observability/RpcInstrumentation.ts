@@ -11,6 +11,16 @@ type WsRpcMethod = RpcGroup.Rpcs<typeof WsRpcGroup>["_tag"];
 
 // Trace queries and dashboards depend on these labels, including deviations from method prefixes.
 const RPC_AGGREGATES = {
+  [WS_METHODS.lifeRead]: "life",
+  [WS_METHODS.lifeWrite]: "life",
+  [WS_METHODS.lifeAsset]: "life",
+  [WS_METHODS.lifeBackup]: "life",
+  [WS_METHODS.lifeRestore]: "life",
+  [WS_METHODS.lifeModels]: "life",
+  [WS_METHODS.lifeProcess]: "life",
+  [WS_METHODS.lifePushKey]: "life",
+  [WS_METHODS.lifeSubscribe]: "life",
+
   [ORCHESTRATION_V2_WS_METHODS.dispatchCommand]: "orchestrationV2",
   [ORCHESTRATION_V2_WS_METHODS.getWorkflowScript]: "orchestration",
   [ORCHESTRATION_V2_WS_METHODS.getNativeChildWork]: "orchestration",

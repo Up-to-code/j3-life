@@ -139,10 +139,10 @@ it.layer(NodeServices.layer)("service state persistence", (it) => {
         const root = yield* fs.makeTempDirectoryScoped({ prefix: "t3-service-env-" });
         const inherited = Object.freeze({
           PATH: "inherited-path",
-          T3CODE_HOME: root,
+          J3LIFE_HOME: root,
           T3_BOOT_SERVICE_UNIT: "managed-unit",
           T3_SERVICE_LAUNCHER_CONTEXT: "managed-context",
-          T3CODE_PORT: "ambient",
+          J3LIFE_PORT: "ambient",
         });
         assert.deepEqual(
           yield* Effect.promise(() => readServiceEnvironment(root, inherited)),
@@ -152,14 +152,14 @@ it.layer(NodeServices.layer)("service state persistence", (it) => {
           path.join(root, SERVICE_ENV_FILE),
           [
             "# service configuration",
-            "export T3CODE_PORT=1234 # inline comment",
+            "export J3LIFE_PORT=1234 # inline comment",
             'T3CODE_TOKEN="literal $HOME ${USER} $(whoami) # token"',
             'MULTILINE="first\nsecond"',
             "EMPTY=",
             "PATH=/bad",
             "Path=/bad",
-            "T3CODE_HOME=/bad",
-            "t3code_home=/bad",
+            "J3LIFE_HOME=/bad",
+            "j3life_home=/bad",
             "T3_BOOT_SERVICE_UNIT=bad",
             "t3_boot_service_unit=bad",
             "T3_SERVICE_LAUNCHER_CONTEXT=bad",
@@ -168,7 +168,7 @@ it.layer(NodeServices.layer)("service state persistence", (it) => {
         );
         assert.deepEqual(yield* Effect.promise(() => readServiceEnvironment(root, inherited)), {
           ...inherited,
-          T3CODE_PORT: "1234",
+          J3LIFE_PORT: "1234",
           T3CODE_TOKEN: "literal $HOME ${USER} $(whoami) # token",
           MULTILINE: "first\nsecond",
           EMPTY: "",
@@ -319,7 +319,7 @@ if (context.update?.status === "pending") {
       const observationsPath = path.join(root, "environment-observations.jsonl");
       const envPath = path.join(root, SERVICE_ENV_FILE);
       yield* fs.writeFileString(envPath, "T3CODE_TEST_SERVICE_TOKEN=initial\n");
-      vi.stubEnv("T3CODE_HOME", root);
+      vi.stubEnv("J3LIFE_HOME", root);
       vi.stubEnv("T3CODE_TEST_SERVICE_TOKEN", "inherited");
       yield* Effect.addFinalizer(() => Effect.sync(() => vi.unstubAllEnvs()));
       yield* fs.makeDirectory(path.dirname(databasePath), { recursive: true });

@@ -1,4 +1,16 @@
 import {
+  LifeReadInput,
+  LifeSnapshot,
+  LifeWriteInput,
+  LifeWriteResult,
+  LifeFile,
+  LifeBackup,
+  LifeModel,
+  LifeProcessInput,
+  LifePushSubscription,
+  LifeError,
+} from "./life.ts";
+import {
   OrchestrationV2SearchThreadError,
   OrchestrationV2SearchThreadInput,
   OrchestrationV2SearchThreadResult,
@@ -407,6 +419,15 @@ import { VcsError } from "./vcs.ts";
 import { Project, ProjectMutation, ProjectMutationError } from "./project.ts";
 
 export const WS_METHODS = {
+  lifeRead: "life.read",
+  lifeWrite: "life.write",
+  lifeAsset: "life.asset",
+  lifeBackup: "life.backup",
+  lifeRestore: "life.restore",
+  lifeModels: "life.models",
+  lifeProcess: "life.process",
+  lifePushKey: "life.pushKey",
+  lifeSubscribe: "life.subscribe",
   projectsListEntries: "projects.listEntries",
   projectsListIgnoredFiles: "projects.listIgnoredFiles",
   projectsReadFile: "projects.readFile",
@@ -1999,7 +2020,52 @@ export class RpcScopeAuthorization extends RpcMiddleware.Service<RpcScopeAuthori
   { error: EnvironmentAuthorizationError },
 ) {}
 
+const LifeRpcs = [
+  Rpc.make(WS_METHODS.lifeRead, {
+    payload: LifeReadInput,
+    success: LifeSnapshot,
+    error: LifeError,
+  }),
+  Rpc.make(WS_METHODS.lifeWrite, {
+    payload: LifeWriteInput,
+    success: LifeWriteResult,
+    error: LifeError,
+  }),
+  Rpc.make(WS_METHODS.lifeAsset, {
+    payload: Schema.Struct({ id: Schema.String }),
+    success: LifeFile,
+    error: LifeError,
+  }),
+  Rpc.make(WS_METHODS.lifeBackup, {
+    payload: Schema.Struct({}),
+    success: LifeBackup,
+    error: LifeError,
+  }),
+  Rpc.make(WS_METHODS.lifeRestore, { payload: LifeBackup, success: Schema.Void, error: LifeError }),
+  Rpc.make(WS_METHODS.lifeModels, {
+    payload: Schema.Struct({}),
+    success: Schema.Array(LifeModel),
+    error: LifeError,
+  }),
+  Rpc.make(WS_METHODS.lifeProcess, {
+    payload: LifeProcessInput,
+    success: Schema.Struct({ changeId: Schema.String }),
+    error: LifeError,
+  }),
+  Rpc.make(WS_METHODS.lifePushKey, {
+    payload: Schema.Struct({}),
+    success: Schema.String,
+    error: LifeError,
+  }),
+  Rpc.make(WS_METHODS.lifeSubscribe, {
+    payload: Schema.Struct({ subscription: Schema.NullOr(LifePushSubscription) }),
+    success: Schema.Void,
+    error: LifeError,
+  }),
+] as const;
+
 export const WsRpcGroup = RpcGroup.make(
+  ...LifeRpcs,
   WsGuestShareCreateRpc,
   WsServerProbeRpc,
   WsServerGetConfigRpc,

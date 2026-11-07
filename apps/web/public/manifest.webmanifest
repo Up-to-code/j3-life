@@ -1,8 +1,8 @@
 {
-  "id": "/",
-  "name": "T3 Code",
-  "short_name": "T3 Code",
-  "start_url": "/",
+  "id": "/j3-life",
+  "name": "J3 Life",
+  "short_name": "J3 Life",
+  "start_url": "/life/today",
   "scope": "/",
   "display": "standalone",
   "background_color": "#161616",

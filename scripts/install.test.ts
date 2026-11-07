@@ -22,7 +22,7 @@ describe.skipIf(HostProcess.Platform.defaultValue() !== "linux")("installer home
     const home = NodePath.join(root, homeName);
     const version = "1.2.3";
     const target = NodePath.join(home, "runtime/versions", version);
-    const launcher = NodePath.join(root, "bin/t3");
+    const launcher = NodePath.join(root, "bin/j3-life");
     try {
       await NodeFSP.mkdir(target, { recursive: true });
       await NodeFSP.writeFile(NodePath.join(target, ".install-complete"), `${version}\n`);
@@ -37,16 +37,16 @@ describe.skipIf(HostProcess.Platform.defaultValue() !== "linux")("installer home
           env: {
             ...process.env,
             HOME: root,
-            T3CODE_HOME: homeName,
-            T3CODE_VERSION: version,
-            T3CODE_INSTALL_BIN_DIR: NodePath.dirname(launcher),
-            T3CODE_RELEASE_BASE_URL: "http://127.0.0.1:1",
+            J3LIFE_HOME: homeName,
+            J3LIFE_VERSION: version,
+            J3LIFE_INSTALL_BIN_DIR: NodePath.dirname(launcher),
+            J3LIFE_RELEASE_BASE_URL: "http://127.0.0.1:1",
           },
           encoding: "utf8",
         },
       );
       expect(status, stdout + stderr).toBe(0);
-      expect(stderr).toContain(`Installed T3 Code ${version}`);
+      expect(stderr).toContain(`Installed J3 Life ${version}`);
       expect(await NodeFSP.readlink(launcher)).toBe(NodePath.join(target, "t3"));
       expect(
         NodeChildProcess.execFileSync(launcher, ["--version"], {
@@ -71,10 +71,10 @@ describe.skipIf(HostProcess.Platform.defaultValue() !== "linux")("installer chan
     const server = NodeHttp.createServer((request, response) => {
       const url = new URL(request.url ?? "/", "http://fixture");
       const body =
-        url.pathname === "/pingdotgg/t3code/releases/latest" &&
+        url.pathname === "/Up-to-code/j3-life/releases/latest" &&
         request.headers.accept === "application/json"
           ? { tag_name: "v1.2.3" }
-          : url.pathname === "/repos/pingdotgg/t3code/releases"
+          : url.pathname === "/repos/Up-to-code/j3-life/releases"
             ? { "1": nightlies, "2": [{ tag_name: `v${version}` }, { tag_name: "v1.2.3" }] }[
                 url.searchParams.get("page") ?? ""
               ]
@@ -102,12 +102,12 @@ describe.skipIf(HostProcess.Platform.defaultValue() !== "linux")("installer chan
           const child = NodeChildProcess.spawn("sh", [installer], {
             env: {
               ...process.env,
-              T3CODE_VERSION: "",
-              T3CODE_CHANNEL: channel,
-              T3CODE_HOME: NodePath.join(root, "home"),
-              T3CODE_INSTALL_BIN_DIR: NodePath.join(root, "bin"),
+              J3LIFE_VERSION: "",
+              J3LIFE_CHANNEL: channel,
+              J3LIFE_HOME: NodePath.join(root, "home"),
+              J3LIFE_INSTALL_BIN_DIR: NodePath.join(root, "bin"),
               // A wrong version must fail here instead of downloading a real release.
-              T3CODE_RELEASE_BASE_URL: origin,
+              J3LIFE_RELEASE_BASE_URL: origin,
             },
             stdio: ["ignore", "pipe", "pipe"],
           });
@@ -119,7 +119,7 @@ describe.skipIf(HostProcess.Platform.defaultValue() !== "linux")("installer chan
         },
       );
       expect(code, output).toBe(0);
-      expect(output).toContain(`Installed T3 Code ${version}`);
+      expect(output).toContain(`Installed J3 Life ${version}`);
     } finally {
       server.closeAllConnections();
       await new Promise<void>((resolve) => server.close(() => resolve()));
@@ -202,10 +202,10 @@ describe.skipIf(HostProcess.Platform.defaultValue() !== "linux")("installer chec
                   env: {
                     ...process.env,
                     PATH: tools,
-                    T3CODE_VERSION: version,
-                    T3CODE_HOME: home,
-                    T3CODE_INSTALL_BIN_DIR: NodePath.join(root, "bin"),
-                    T3CODE_RELEASE_BASE_URL: `http://127.0.0.1:${address.port}`,
+                    J3LIFE_VERSION: version,
+                    J3LIFE_HOME: home,
+                    J3LIFE_INSTALL_BIN_DIR: NodePath.join(root, "bin"),
+                    J3LIFE_RELEASE_BASE_URL: `http://127.0.0.1:${address.port}`,
                   },
                   stdio: ["ignore", "pipe", "pipe"],
                 },
@@ -224,14 +224,14 @@ describe.skipIf(HostProcess.Platform.defaultValue() !== "linux")("installer chec
               await NodeFSP.readFile(NodePath.join(versions, version, ".install-complete"), "utf8"),
             ).toBe("1.2.3\n");
             expect(
-              NodeChildProcess.execFileSync(NodePath.join(root, "bin/t3"), ["--version"], {
+              NodeChildProcess.execFileSync(NodePath.join(root, "bin/j3-life"), ["--version"], {
                 encoding: "utf8",
               }).trim(),
             ).toBe("t3 v1.2.3");
           } else {
             expect(code).not.toBe(0);
             expect(output).toContain("checksum mismatch");
-            expect(output).not.toContain("Installed T3 Code");
+            expect(output).not.toContain("Installed J3 Life");
             expect(await NodeFSP.readdir(versions)).toEqual([]);
           }
         } finally {

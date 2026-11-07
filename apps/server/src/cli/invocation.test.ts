@@ -33,7 +33,7 @@ it.layer(NodeServices.layer)("root CLI commands", (it) => {
     const fs = yield* FileSystem.FileSystem;
     const path = yield* Path.Path;
     const bin = yield* fs.makeTempDirectoryScoped();
-    yield* fs.writeFileString(path.join(bin, "t3"), "#!/bin/sh\n", { mode: 0o755 });
+    yield* fs.writeFileString(path.join(bin, "j3-life"), "#!/bin/sh\n", { mode: 0o755 });
     return bin;
   });
 
@@ -52,7 +52,7 @@ it.layer(NodeServices.layer)("root CLI commands", (it) => {
           entry: "/home/theo/.local/lib/node_modules/t3/dist/bin.mjs",
           path: yield* pathWithT3,
         }),
-      ).toBe('sudo env "PATH=$PATH" t3 browser setup');
+      ).toBe('sudo env "PATH=$PATH" j3-life browser setup');
     }).pipe(Effect.scoped),
   );
 
@@ -66,7 +66,7 @@ it.layer(NodeServices.layer)("root CLI commands", (it) => {
           path: yield* pathWithT3,
           args,
         }),
-      ).toBe(`sudo env "PATH=$PATH" t3 browser setup --base-dir '/srv/t3 home'`);
+      ).toBe(`sudo env "PATH=$PATH" j3-life browser setup --base-dir '/srv/t3 home'`);
       expect(
         yield* rootCommand({ node: "/opt/t3/t3", entry: "/opt/t3/t3", executable: true, args }),
       ).toBe("sudo /opt/t3/t3 browser setup --base-dir '/srv/t3 home'");
@@ -84,7 +84,7 @@ it.layer(NodeServices.layer)("root CLI commands", (it) => {
       const desktop = {
         node: "/tmp/.mount_T3abc/t3code",
         entry: "/tmp/.mount_T3abc/resources/app.asar/apps/server/dist/bin.mjs",
-        env: { T3CODE_CLI_PATH: shim },
+        env: { J3LIFE_CLI_PATH: shim },
       };
 
       expect(yield* rootCommand(desktop)).toBe(`sudo '${shim}' browser setup`);
@@ -96,9 +96,9 @@ it.layer(NodeServices.layer)("root CLI commands", (it) => {
 
       // The link the app installs onto PATH leads to its own launcher, so plain `t3` is right.
       const linked = yield* fs.makeTempDirectoryScoped();
-      yield* fs.symlink(shim, path.join(linked, "t3"));
+      yield* fs.symlink(shim, path.join(linked, "j3-life"));
       expect(yield* rootCommand({ ...desktop, path: linked })).toBe(
-        'sudo env "PATH=$PATH" t3 browser setup',
+        'sudo env "PATH=$PATH" j3-life browser setup',
       );
 
       expect(
@@ -110,8 +110,8 @@ it.layer(NodeServices.layer)("root CLI commands", (it) => {
       ).toBe("sudo /opt/t3/t3 browser setup");
 
       expect(
-        yield* rootCommand({ ...desktop, env: { T3CODE_CLI_PATH: path.join(home, "gone") } }),
-      ).toBe('sudo env "PATH=$PATH" t3 browser setup');
+        yield* rootCommand({ ...desktop, env: { J3LIFE_CLI_PATH: path.join(home, "gone") } }),
+      ).toBe('sudo env "PATH=$PATH" j3-life browser setup');
     }).pipe(Effect.scoped),
   );
 });
@@ -135,11 +135,11 @@ it.layer(NodeServices.layer)("host CLI commands", (it) => {
           Effect.provideService(HostProcess.Platform, platform),
           Effect.provideService(HostProcess.Environment, { PATH: "", ...env }),
         );
-      expect((yield* hostCommand("win32", { T3CODE_CLI_PATH: shim })).command).toBe(
+      expect((yield* hostCommand("win32", { J3LIFE_CLI_PATH: shim })).command).toBe(
         `& "${shim}" doctor "--base-dir" "C:\\Users\\Jane Doe\\.t3"`,
       );
       expect((yield* hostCommand("win32", {})).command).toBe(
-        't3 doctor "--base-dir" "C:\\Users\\Jane Doe\\.t3"',
+        'j3-life doctor "--base-dir" "C:\\Users\\Jane Doe\\.t3"',
       );
       expect(
         (yield* resolveHostCliCommand("doctor", ["--base-dir", "C:\\T3\\\u201CArchive\u201D"]).pipe(
@@ -149,8 +149,8 @@ it.layer(NodeServices.layer)("host CLI commands", (it) => {
           Effect.provideService(HostProcess.Arguments, ["C:\\t3.exe", "C:\\bin.mjs"]),
           Effect.provideService(HostProcess.IsExecutable, false),
         )).command,
-      ).toBe('t3 doctor "--base-dir" "C:\\T3\\\u201C\u201CArchive\u201D\u201D"');
-      expect((yield* hostCommand("linux", { T3CODE_CLI_PATH: shim })).command).toMatch(
+      ).toBe('j3-life doctor "--base-dir" "C:\\T3\\\u201C\u201CArchive\u201D\u201D"');
+      expect((yield* hostCommand("linux", { J3LIFE_CLI_PATH: shim })).command).toMatch(
         / doctor --base-dir 'C:\\Users\\Jane Doe\\\.t3'$/,
       );
     }).pipe(Effect.scoped),
@@ -162,7 +162,7 @@ it.layer(NodeServices.layer)("manual server installation ownership", (it) => {
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const root = yield* fs.makeTempDirectoryScoped();
+      const root = yield* fs.makeTempDirectoryScoped().pipe(Effect.flatMap(fs.realPath));
       const executable = path.join(root, ".t3/runtime/versions/1.0.0/t3");
       yield* fs.makeDirectory(path.dirname(executable), { recursive: true });
       yield* fs.writeFileString(executable, "");
@@ -186,7 +186,7 @@ it.layer(NodeServices.layer)("manual server installation ownership", (it) => {
           Effect.provideService(HostProcess.IsExecutable, launchedBy),
           Effect.provideService(
             HostProcess.Environment,
-            launchedBy ? { T3CODE_NPM_LAUNCHER_PATH: entry } : {},
+            launchedBy ? { J3LIFE_NPM_LAUNCHER_PATH: entry } : {},
           ),
         );
         expect(installation).toEqual({ kind });
@@ -198,7 +198,7 @@ it.layer(NodeServices.layer)("manual server installation ownership", (it) => {
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const root = yield* fs.makeTempDirectoryScoped();
+      const root = yield* fs.makeTempDirectoryScoped().pipe(Effect.flatMap(fs.realPath));
       const prefix = path.join(root, "bunx-tools");
       const packageRoot = path.join(prefix, "lib/node_modules/t3");
       const entry = path.join(packageRoot, "dist/bin.mjs");
@@ -229,7 +229,7 @@ it.layer(NodeServices.layer)("manual server installation ownership", (it) => {
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const root = yield* fs.makeTempDirectoryScoped();
+      const root = yield* fs.makeTempDirectoryScoped().pipe(Effect.flatMap(fs.realPath));
       const prefix = path.join(root, "bunx-tools");
       const packageRoot = path.join(prefix, "lib/node_modules/t3");
       const launcher = path.join(packageRoot, "bin/t3.mjs");
@@ -245,7 +245,7 @@ it.layer(NodeServices.layer)("manual server installation ownership", (it) => {
         Effect.provideService(HostProcess.Arguments, [executable, executable]),
         Effect.provideService(HostProcess.IsExecutable, true),
         Effect.provideService(HostProcess.Platform, "linux"),
-        Effect.provideService(HostProcess.Environment, { T3CODE_NPM_LAUNCHER_PATH: launcher }),
+        Effect.provideService(HostProcess.Environment, { J3LIFE_NPM_LAUNCHER_PATH: launcher }),
       );
       for (const [version, expected] of [
         ["0.0.1", null],
@@ -264,7 +264,7 @@ it.layer(NodeServices.layer)("manual server installation ownership", (it) => {
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const root = yield* fs.makeTempDirectoryScoped();
+      const root = yield* fs.makeTempDirectoryScoped().pipe(Effect.flatMap(fs.realPath));
       for (const relative of [
         "project/node_modules/t3/dist/bin.mjs",
         "project/apps/server/dist/bin.mjs",

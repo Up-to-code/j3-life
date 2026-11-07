@@ -80,8 +80,8 @@ function layerEnvironment(
         NodeServices.layer,
         NodeCrypto.layer,
         DesktopConfig.layerTest({
-          T3CODE_HOME: baseDir,
-          T3CODE_PORT: "9999",
+          J3LIFE_HOME: baseDir,
+          J3LIFE_PORT: "9999",
           T3CODE_MODE: "desktop",
           T3CODE_DESKTOP_LAN_HOST: "192.168.1.50",
           VITE_DEV_SERVER_URL: options?.devServerUrl,
@@ -237,7 +237,7 @@ describe("DesktopBackendConfiguration", () => {
         assert.equal(first.captureOutput, true);
         assert.equal(first.env.ELECTRON_RUN_AS_NODE, "1");
         assert.equal(first.env.T3CODE_DESKTOP_SHELL_DISCOVERY_PENDING, "1");
-        assert.isUndefined(first.env.T3CODE_PORT);
+        assert.isUndefined(first.env.J3LIFE_PORT);
         assert.isUndefined(first.env.T3CODE_MODE);
         assert.isUndefined(first.env.T3CODE_DESKTOP_LAN_HOST);
 

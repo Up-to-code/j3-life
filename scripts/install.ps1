@@ -1,25 +1,25 @@
-# Installs the T3 Code CLI from a GitHub Release archive on Windows. Needs
+# Installs the J3 Life CLI from a GitHub Release archive on Windows. Needs
 # only PowerShell 5.1+; no Node, npm, or compiler.
 #
-#   irm https://t3.codes/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/Up-to-code/j3-life/main/scripts/install.ps1 | iex
 #
 # Environment:
-#   T3CODE_CHANNEL           release train to follow: stable, nightly, or preview
+#   J3LIFE_CHANNEL           release train to follow: stable, nightly, or preview
 #                            (default: stable; preview is a maintainers' test train)
-#   T3CODE_VERSION           exact version to install (overrides T3CODE_CHANNEL)
-#   T3CODE_HOME              T3 home directory (default: ~\.t3)
-#   T3CODE_INSTALL_BIN_DIR   where t3.exe is linked (default: ~\.local\bin)
-#   T3CODE_RELEASE_BASE_URL  mirror for releases/download (default: GitHub)
+#   J3LIFE_VERSION           exact version to install (overrides J3LIFE_CHANNEL)
+#   J3LIFE_HOME              J3 Life home directory (default: ~\.j3-life)
+#   J3LIFE_INSTALL_BIN_DIR   where t3.exe is linked (default: ~\.local\bin)
+#   J3LIFE_RELEASE_BASE_URL  mirror for releases/download (default: GitHub)
 #
-# The archive is unpacked into $T3CODE_HOME\runtime\versions\<version>, the
+# The archive is unpacked into $J3LIFE_HOME\runtime\versions\<version>, the
 # same layout `t3 service install` uses, so the service reuses this download.
 $ErrorActionPreference = "Stop"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$repo = "pingdotgg/t3code"
-$baseUrl = if ($env:T3CODE_RELEASE_BASE_URL) { $env:T3CODE_RELEASE_BASE_URL.TrimEnd("/") } else { "https://github.com/$repo/releases/download" }
-$t3Home = if ($env:T3CODE_HOME) { $env:T3CODE_HOME } else { Join-Path $HOME ".t3" }
-$binDir = if ($env:T3CODE_INSTALL_BIN_DIR) { $env:T3CODE_INSTALL_BIN_DIR } else { Join-Path $HOME ".local\bin" }
+$repo = "Up-to-code/j3-life"
+$baseUrl = if ($env:J3LIFE_RELEASE_BASE_URL) { $env:J3LIFE_RELEASE_BASE_URL.TrimEnd("/") } else { "https://github.com/$repo/releases/download" }
+$t3Home = if ($env:J3LIFE_HOME) { $env:J3LIFE_HOME } else { Join-Path $HOME ".j3-life" }
+$binDir = if ($env:J3LIFE_INSTALL_BIN_DIR) { $env:J3LIFE_INSTALL_BIN_DIR } else { Join-Path $HOME ".local\bin" }
 
 function Fail([string] $message) {
   Write-Error "t3 install: $message"
@@ -109,7 +109,7 @@ if ($interactive) {
   [Console]::Error.WriteLine()
   for ($i = 0; $i -lt $mark.Length; $i++) {
     $row = $mark[$i].Replace('#', [char]0x2588).Replace('^', [char]0x2580).Replace('_', [char]0x2584)
-    $label = if ($i -eq 1) { "     ${bold}T3 Code$reset" } elseif ($i -eq 2) { "     ${muted}CLI installer$reset" } else { "" }
+    $label = if ($i -eq 1) { "     ${bold}J3 Life$reset" } elseif ($i -eq 2) { "     ${muted}CLI installer$reset" } else { "" }
     [Console]::Error.WriteLine("  $bold$row$reset$label")
   }
   [Console]::Error.WriteLine()
@@ -124,14 +124,14 @@ $arch = switch ($rawArch) {
   default { Fail "unsupported architecture $rawArch" }
 }
 
-$channel = if ($env:T3CODE_CHANNEL) { $env:T3CODE_CHANNEL } else { "stable" }
-$version = $env:T3CODE_VERSION
+$channel = if ($env:J3LIFE_CHANNEL) { $env:J3LIFE_CHANNEL } else { "stable" }
+$version = $env:J3LIFE_VERSION
 if (-not $version) {
   $tagPattern = switch ($channel) {
     "stable" { '^v\d+\.\d+\.\d+$' }
     "nightly" { '^v\d+\.\d+\.\d+-nightly\.\d+\.\d+$' }
     "preview" { '^v\d+\.\d+\.\d+-preview\.\d+\.\d+$' }
-    default { Fail "T3CODE_CHANNEL must be stable, nightly, or preview" }
+    default { Fail "J3LIFE_CHANNEL must be stable, nightly, or preview" }
   }
   if ($channel -eq "stable") {
     # release.yml marks only plain stable releases latest. This is a github.com
@@ -146,12 +146,12 @@ if (-not $version) {
       if (-not $releases) { break }
     }
   }
-  if (-not $tag) { Fail "could not find a $channel release; set T3CODE_VERSION" }
+  if (-not $tag) { Fail "could not find a $channel release; set J3LIFE_VERSION" }
   $version = $tag.Substring(1)
 }
 if ($version -match '-preview\.') {
-  Write-Warning "t3 $version is a preview build. Preview builds are cut by maintainers from unreleased branches to exercise the release pipeline. They can be broken, receive no fixes, and are never offered as updates. Set T3CODE_CHANNEL=stable (the default) for a supported build."
-  if ($channel -ne "preview" -and -not $env:T3CODE_VERSION) {
+  Write-Warning "t3 $version is a preview build. Preview builds are cut by maintainers from unreleased branches to exercise the release pipeline. They can be broken, receive no fixes, and are never offered as updates. Set J3LIFE_CHANNEL=stable (the default) for a supported build."
+  if ($channel -ne "preview" -and -not $env:J3LIFE_VERSION) {
     Fail "refusing a preview build that was not explicitly requested"
   }
 }
@@ -170,7 +170,7 @@ if ((Test-Path $marker) -and ((Get-Content $marker -Raw).Trim() -eq $version)) {
   New-Item -ItemType Directory -Path $staging | Out-Null
   try {
     if ($interactive) { [Console]::Error.Write("`r$esc[2K") }
-    [Console]::Error.WriteLine("  ${muted}Installing$reset T3 Code $bold$version$reset`n")
+    [Console]::Error.WriteLine("  ${muted}Installing$reset J3 Life $bold$version$reset`n")
     Step "Downloading..."
     try {
       Fetch "$baseUrl/v$version/SHA256SUMS" (Join-Path $staging "SHA256SUMS")
@@ -191,7 +191,7 @@ if ((Test-Path $marker) -and ((Get-Content $marker -Raw).Trim() -eq $version)) {
     $actual = (Get-FileHash -Algorithm SHA256 (Join-Path $staging $archive)).Hash.ToLowerInvariant()
     if ($actual -ne $expected) { Fail "checksum mismatch for $archive" }
 
-    Step "Extracting T3 Code..."
+    Step "Extracting J3 Life..."
     # The archive module reads the global preference, not the caller's local scope.
     $savedProgress = $global:ProgressPreference
     try {
@@ -213,9 +213,9 @@ if ((Test-Path $marker) -and ((Get-Content $marker -Raw).Trim() -eq $version)) {
   }
 }
 
-Step "Setting up the t3 command..."
+Step "Setting up the j3-life command..."
 New-Item -ItemType Directory -Force -Path $binDir | Out-Null
-$shim = Join-Path $binDir "t3.cmd"
+$shim = Join-Path $binDir "j3-life.cmd"
 # UTF-8 without a BOM: cmd.exe reads the shim as-is, and ASCII would corrupt
 # non-ASCII characters in the user's home path.
 [System.IO.File]::WriteAllText($shim, "@echo off`r`n`"$(Join-Path $targetDir 't3.exe')`" %*", (New-Object System.Text.UTF8Encoding $false))
@@ -226,9 +226,9 @@ if (-not ((Test-Path $launchers) -and ((Get-Content $launchers) -contains $shimP
   [System.IO.File]::AppendAllText($launchers, "$shimPath`r`n", (New-Object System.Text.UTF8Encoding $false))
 }
 if ($interactive) { [Console]::Error.Write("`r$esc[2K") }
-[Console]::Error.WriteLine("  ${green}Installed T3 Code $version$reset`n")
+[Console]::Error.WriteLine("  ${green}Installed J3 Life $version$reset`n")
 if (($env:PATH -split ";") -notcontains $binDir) {
-  Write-Host "  Add $binDir to your PATH, then run ${bold}t3$reset.`n"
+  Write-Host "  Add $binDir to your PATH, then run ${bold}j3-life$reset.`n"
 } else {
-  Write-Host "  Run ${bold}t3$reset to use T3 Code here, or ${bold}t3 up$reset to use it from your other devices.`n"
+  Write-Host "  Run ${bold}j3-life$reset to use J3 Life here, or ${bold}j3-life up$reset to use it from your other devices.`n"
 }

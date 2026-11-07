@@ -445,7 +445,7 @@ it.layer(NodeServices.layer)("prunePinnedRuntimes", (it) => {
       yield* fs.makeDirectory(customBinDir);
       // Chained: the launcher reaches its runtime through a second link.
       yield* fs.symlink(path.join(versionsDir, "1.2.0", "t3"), path.join(baseDir, "alias-t3"));
-      yield* fs.symlink(path.join(baseDir, "alias-t3"), path.join(binDir, "t3"));
+      yield* fs.symlink(path.join(baseDir, "alias-t3"), path.join(binDir, "j3-life"));
       yield* fs.symlink(path.join(versionsDir, "1.2.5", "t3"), path.join(customBinDir, "t3"));
       yield* fs.writeFileString(
         path.join(baseDir, "runtime", "launchers"),
@@ -470,7 +470,7 @@ it.layer(NodeServices.layer)("prunePinnedRuntimes", (it) => {
           lsofRunner(`p42\nftxt\nn${path.join(versionsDir, "1.3.0", "t3")}\n`),
         ),
         Effect.provideService(HostProcess.Platform, "darwin"),
-        Effect.provideService(HostProcess.Environment, { T3CODE_INSTALL_BIN_DIR: binDir }),
+        Effect.provideService(HostProcess.Environment, { J3LIFE_INSTALL_BIN_DIR: binDir }),
       );
 
       // 1.2.0 is the default launcher, 1.2.5 a recorded one, 1.3.0 running, 1.3.5 in the unit,
@@ -480,7 +480,7 @@ it.layer(NodeServices.layer)("prunePinnedRuntimes", (it) => {
       // The launcher found on PATH is remembered for a service that cannot see it.
       assert.equal(
         yield* fs.readFileString(path.join(baseDir, "runtime", "launchers")),
-        `${path.join(customBinDir, "t3")}\n\n${path.join(binDir, "t3")}\n`,
+        `${path.join(customBinDir, "t3")}\n\n${path.join(binDir, "j3-life")}\n`,
       );
       assert.deepEqual((yield* fs.readDirectory(versionsDir)).toSorted(), [
         ".staging-abc",
@@ -511,7 +511,7 @@ it.layer(NodeServices.layer)("prunePinnedRuntimes", (it) => {
       const { baseDir, versionsDir } = yield* setup(["1.0.0", "1.1.0"]);
       const binDir = path.join(baseDir, "custom-bin");
       yield* fs.makeDirectory(binDir);
-      yield* fs.symlink(path.join(versionsDir, "1.0.0", "t3"), path.join(binDir, "t3"));
+      yield* fs.symlink(path.join(versionsDir, "1.0.0", "t3"), path.join(binDir, "j3-life"));
       const launchersFile = path.join(baseDir, "runtime", "launchers");
       yield* fs.writeFileString(launchersFile, recorded);
       const prune = (environment: Record<string, string>) =>
@@ -550,7 +550,7 @@ it.layer(NodeServices.layer)("prunePinnedRuntimes", (it) => {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
       const { baseDir, versionsDir } = yield* setup(["1.0.0", "1.1.0"]);
-      const shim = path.join(baseDir, "t3.cmd");
+      const shim = path.join(baseDir, "j3-life.cmd");
       yield* fs.writeFileString(
         shim,
         `@echo off\r\n"${path.join(versionsDir, "1.0.0", "t3.exe").toUpperCase()}" %*`,
@@ -589,7 +589,7 @@ it.layer(NodeServices.layer)("prunePinnedRuntimes", (it) => {
       const removed = yield* prunePinnedRuntimes({ baseDir, keep: ["2.0.0"] }).pipe(
         Effect.provideService(ProcessRunner.ProcessRunner, lsofRunner(lsof)),
         Effect.provideService(HostProcess.Platform, "darwin"),
-        Effect.provideService(HostProcess.Environment, { T3CODE_INSTALL_BIN_DIR: baseDir }),
+        Effect.provideService(HostProcess.Environment, { J3LIFE_INSTALL_BIN_DIR: baseDir }),
       );
       assert.deepEqual(removed, []);
       assert.deepEqual(yield* fs.readDirectory(versionsDir), ["1.0.0"]);
@@ -607,7 +607,7 @@ it.layer(NodeServices.layer)("prunePinnedRuntimes", (it) => {
         // Multicall coreutils (Ubuntu's uutils) refuse to run renamed, so copy Node instead.
         yield* fs.copyFile(process.execPath, entry);
         yield* fs.chmod(entry, 0o755);
-        const link = path.join(baseDir, "t3");
+        const link = path.join(baseDir, "j3-life");
         yield* fs.symlink(entry, link);
         // Its argv names only the link, as with `t3 serve` run from PATH. Removing the link after
         // spawning leaves the process's executable as the only reference.
@@ -617,7 +617,7 @@ it.layer(NodeServices.layer)("prunePinnedRuntimes", (it) => {
 
         const removed = yield* prunePinnedRuntimes({ baseDir, keep: ["2.0.0"] }).pipe(
           Effect.provideService(HostProcess.Platform, "linux"),
-          Effect.provideService(HostProcess.Environment, { T3CODE_INSTALL_BIN_DIR: baseDir }),
+          Effect.provideService(HostProcess.Environment, { J3LIFE_INSTALL_BIN_DIR: baseDir }),
           Effect.provide(ProcessRunner.layer),
         );
         assert.deepEqual(removed, ["1.1.0"]);

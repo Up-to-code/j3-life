@@ -363,7 +363,7 @@ it("revokes across windows even before the storage event and survives stale pref
   document.body.append(other);
   try {
     const storage = other.contentWindow!.localStorage;
-    const key = "t3code:voice-audio-grant:v1";
+    const key = "j3life:voice-audio-grant:v1";
     const grant = JSON.parse(storage.getItem(key)!) as { id: string };
     const canSend = bindAudioGrant(grant.id);
     expect(canSend()).toBe(true);

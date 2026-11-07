@@ -1,3 +1,5 @@
+import { LifeError } from "@t3tools/contracts/life";
+import * as LifeService from "./life/LifeService.ts";
 import { OrchestrationDispatchCommandError } from "@t3tools/contracts";
 import * as Context from "effect/Context";
 import * as SecureRandom from "effect/crypto/SecureRandom";
@@ -1391,10 +1393,22 @@ export const layerWsRpc = (
   serverBrowser: ServerBrowser.ServerBrowser["Service"],
   reportProfiles: ServerBrowser.ProfileReporter,
   settingsClient: { readonly secretReferences: boolean },
+  life: Option.Option<LifeService.LifeService["Service"]> = Option.none(),
 ) =>
   Layer.effectContext(
     Effect.gen(function* () {
       const currentSessionId = currentSession.sessionId;
+      const useLife = <A>(
+        f: (service: LifeService.LifeService["Service"]) => Effect.Effect<A, LifeError>,
+      ) =>
+        Option.isSome(life)
+          ? f(life.value)
+          : Effect.fail(
+              new LifeError({
+                code: "unavailable",
+                message: "Personal records are unavailable on this environment.",
+              }),
+            );
       const sql = yield* SqlClient.SqlClient;
       const threadManagement = yield* ThreadManagementService.ThreadManagementService;
       const intakeContext = yield* Effect.context<
@@ -2040,6 +2054,16 @@ export const layerWsRpc = (
       });
 
       const handlers = ServerWsRpcGroup.of({
+        [WS_METHODS.lifeRead]: (input) => useLife((s) => s.read(input)),
+        [WS_METHODS.lifeWrite]: (input) => useLife((s) => s.write(input)),
+        [WS_METHODS.lifeAsset]: (input) => useLife((s) => s.asset(input.id)),
+        [WS_METHODS.lifeBackup]: () => useLife((s) => s.backup),
+        [WS_METHODS.lifeRestore]: (input) => useLife((s) => s.restore(input)),
+        [WS_METHODS.lifeModels]: () => useLife((s) => s.models),
+        [WS_METHODS.lifeProcess]: (input) => useLife((s) => s.process(input)),
+        [WS_METHODS.lifePushKey]: () => useLife((s) => Effect.succeed(s.pushKey)),
+        [WS_METHODS.lifeSubscribe]: (input) =>
+          useLife((s) => s.subscribe(currentSessionId, input.subscription)),
         [ORCHESTRATION_V2_WS_METHODS.dispatchCommand]: (command) =>
           Effect.annotateCurrentSpan({
             "orchestration_v2.command_id": command.commandId,
@@ -3494,6 +3518,7 @@ export const WS_RPC_SERVER_OPTIONS = {
 
 export const layer = Layer.unwrap(
   Effect.gen(function* () {
+    const life = yield* Effect.serviceOption(LifeService.LifeService);
     const serverBrowser = yield* ServerBrowser.ServerBrowser;
     const serverSelfUpdate = yield* ServerSelfUpdate.ServerSelfUpdate;
     const npmRelease = yield* NpmRelease.NpmRelease;
@@ -3570,6 +3595,7 @@ export const layer = Layer.unwrap(
               serverBrowser,
               reportProfiles,
               readSettingsClient(url.value),
+              life,
             ).pipe(
               Layer.provideMerge(RpcSerialization.layerJson),
               // Handler-context reporters see only request defects, not server-wide defects.
