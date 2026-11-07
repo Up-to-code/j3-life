@@ -22,6 +22,10 @@ Inbox processing has no shell or file-operation tools. Its proposed record chang
 
 Other MCP clients can connect to this environment's `/mcp` endpoint using the inherited authentication flow. The `j3_life_*` tools search, capture, update progress/reminders, and undo record changes. Updates require a retry key and, for existing records, the current revision. A read-only client cannot change records.
 
+## Choose the Mac host
+
+Use one host for your J3 Life home at a time. The Mac app hosts its own server and keeps running when its window closes; quitting the app stops processing and reminders. For headless use, quit the Mac app, run `j3-life service install`, then use the browser client. Before returning to the Mac app, run `j3-life service uninstall`. Both modes use the same saved J3 Life data. Never delete the server ownership lock to force two hosts to share it.
+
 ## Connect an iPhone
 
 For local network access, run your J3 Life CLI with `up --lan`, or enable network access in **Settings → Sharing & access**. Create a pairing link and scan its QR code. Pair each device separately and revoke it from Sharing & access when necessary.
