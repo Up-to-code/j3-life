@@ -28,9 +28,11 @@ Use one host for your J3 Life home at a time. The Mac app hosts its own server a
 
 ## Connect an iPhone
 
-For local network access, run your J3 Life CLI with `up --lan`, or enable network access in **Settings → Sharing & access**. Create a pairing link and scan its QR code. Pair each device separately and revoke it from Sharing & access when necessary.
+For local network access, run your J3 Life CLI with `up --lan`, or enable network access in **Settings → Sharing & access**. Run `j3-life pair` to create a direct pairing URL and QR code for this Mac. For the personal screens, use the Mac's direct address, not a hosted `app.t3.codes` link. Pair each device separately and revoke it from Sharing & access when necessary.
 
 For camera features and push reminders, use HTTPS. Install Tailscale on the Mac and phone, sign in to the same tailnet, and enable **Tailscale HTTPS** in J3 Life's Sharing & access settings. Follow Tailscale's sign-in and HTTPS consent steps. If another app already uses the default Tailscale HTTPS port, choose another port for J3 Life; do not replace the other app's route.
+
+After HTTPS is enabled, `j3-life pair --tailscale --label iPhone` prints a direct HTTPS pairing QR code.
 
 Open the J3 Life address in Safari, then use **Share → Add to Home Screen**. Open that installed web app and enable phone reminders. The official T3 mobile app does not include these personal screens.
 
